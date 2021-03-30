@@ -1,13 +1,20 @@
-package main
+package process
 
 import (
+	"chatroom/client/utils"
 	"chatroom/common/message"
 	"encoding/json"
 	"fmt"
 	"net"
 )
 
-func login(userId int, userPwd string) (err error) {
+type UserProcess struct {
+	//暂时不需要字段...
+}
+
+//给关联一个用户登录的方法
+//写一个函数，完成登录
+func (this *UserProcess)Login(userId int, userPwd string) (err error) {
 	//1.连接到服务器
 	conn, err := net.Dial("tcp", "localhost:8889")
 	if err != nil {
@@ -41,12 +48,15 @@ func login(userId int, userPwd string) (err error) {
 		return
 	}
 	//7. 这时候的data就是我们要发送的message消息
-	writePkg(conn,data)
+	tf := &utils.Transfer{
+		Conn: conn,
+	}
+	tf.WritePkg(data)
 	fmt.Printf("客户端发送消息的长度=%d 内容=%s", len(data), string(data))
 
 
 	//这里还需要处理服务器端返回的消息
-	mes,err = readPkg(conn)
+	mes,err = tf.ReadPkg()
 	if err != nil {
 		fmt.Println("readPkg(conn) err=", err)
 		return
@@ -56,7 +66,16 @@ func login(userId int, userPwd string) (err error) {
 	var loginResMes message.LoginResMes
 	err = json.Unmarshal([]byte(mes.Data),&loginResMes)
 	if loginResMes.Code == 200{
-		fmt.Println("登录成功")
+		/*
+		这里我们还需要在客户端启动一个协程，该协程保持和服务器端的通讯
+		如果服务器有数据推送给客户端，则接受并显示在客户端的终端
+		*/
+		go serverProcessMes(conn)
+
+		//1. 显示我们登录成功的菜单[循环显示]...
+		for {
+			ShowMenu()
+		}
 	}else{
 		fmt.Println(loginResMes.Error)
 	}

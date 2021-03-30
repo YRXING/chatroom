@@ -1,6 +1,7 @@
 package main
 
 import (
+	"chatroom/client/process"
 	"fmt"
 	"os"
 )
@@ -25,26 +26,20 @@ func main() {
 		switch key {
 		case 1:
 			fmt.Println("登录聊天室")
-			loop = false
+			fmt.Println("USERID：")
+			fmt.Scanf("%d\n", &userId)
+			fmt.Println("PASSWORD：")
+			fmt.Scanf("%s\n", &userPwd)
+			//完成登录，创建一个UserProcess实例
+			up := &process.UserProcess{}
+			up.Login(userId, userPwd)
 		case 2:
 			fmt.Println("注册用户")
-			loop = false
 		case 3:
 			fmt.Println("退出系统")
 			os.Exit(0)
 		default:
 			fmt.Println("你的输入有误，请重新输入")
-		}
-		//更多用户的输入，显示新的提示信息
-		if key == 1 {
-			//说明用户要登录
-			fmt.Println("USERID：")
-			fmt.Scanf("%d\n", &userId)
-			fmt.Println("PASSWORD：")
-			fmt.Scanf("%s\n", &userPwd)
-			login(userId, userPwd)
-		} else if key == 2 {
-			fmt.Println("进行用户注册逻辑")
 		}
 	}
 }
