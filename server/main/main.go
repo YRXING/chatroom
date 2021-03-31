@@ -1,8 +1,10 @@
 package main
 
 import (
+	"chatroom/server/model"
 	"fmt"
 	"net"
+	"time"
 )
 
 //处理客户端的通讯
@@ -15,14 +17,26 @@ func process(conn net.Conn) {
 		Conn: conn,
 	}
 	err := processor.process2()
-	if err!=nil{
-		fmt.Println("客户端和服务器通讯协程错误，err=",err)
+	if err != nil {
+		fmt.Println("客户端和服务器通讯协程错误，err=", err)
 		return
 	}
 }
 
+//这里我们编写一个函数，完成对UserDao的初始化任务
+func initUserDao(){
+	//这里的pool本身就是一个全局变量，这里需要注意一下初始化顺序的问题
+	//initPool后initUserdao
+	model.MyUserDao = model.NewUserDao(pool)
+
+}
+
 
 func main() {
+	//当服务启动时，我们就去初始化我们的redis链接池
+	initPool("localhost:6379",16,0,300*time.Second)
+	initUserDao()
+
 	//提示信息
 	fmt.Println("服务器在8889端口监听.....")
 	listen, err := net.Listen("tcp", "0.0.0.0:8889")

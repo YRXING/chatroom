@@ -14,7 +14,7 @@ type UserProcess struct {
 
 //给关联一个用户登录的方法
 //写一个函数，完成登录
-func (this *UserProcess)Login(userId int, userPwd string) (err error) {
+func (this *UserProcess) Login(userId int, userPwd string) (err error) {
 	//1.连接到服务器
 	conn, err := net.Dial("tcp", "localhost:8889")
 	if err != nil {
@@ -54,9 +54,8 @@ func (this *UserProcess)Login(userId int, userPwd string) (err error) {
 	tf.WritePkg(data)
 	fmt.Printf("客户端发送消息的长度=%d 内容=%s", len(data), string(data))
 
-
 	//这里还需要处理服务器端返回的消息
-	mes,err = tf.ReadPkg()
+	mes, err = tf.ReadPkg()
 	if err != nil {
 		fmt.Println("readPkg(conn) err=", err)
 		return
@@ -64,11 +63,11 @@ func (this *UserProcess)Login(userId int, userPwd string) (err error) {
 
 	//将mes的Data部分反序列化成LoginResMes
 	var loginResMes message.LoginResMes
-	err = json.Unmarshal([]byte(mes.Data),&loginResMes)
-	if loginResMes.Code == 200{
+	err = json.Unmarshal([]byte(mes.Data), &loginResMes)
+	if loginResMes.Code == 200 {
 		/*
-		这里我们还需要在客户端启动一个协程，该协程保持和服务器端的通讯
-		如果服务器有数据推送给客户端，则接受并显示在客户端的终端
+			这里我们还需要在客户端启动一个协程，该协程保持和服务器端的通讯
+			如果服务器有数据推送给客户端，则接受并显示在客户端的终端
 		*/
 		go serverProcessMes(conn)
 
@@ -76,7 +75,7 @@ func (this *UserProcess)Login(userId int, userPwd string) (err error) {
 		for {
 			ShowMenu()
 		}
-	}else{
+	} else {
 		fmt.Println(loginResMes.Error)
 	}
 	return

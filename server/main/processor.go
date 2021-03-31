@@ -14,8 +14,7 @@ type Processor struct {
 	Conn net.Conn
 }
 
-
-func (this *Processor) process2()(err error){
+func (this *Processor) process2() (err error) {
 	//循环的客户端发送的消息
 	for {
 		//这里我们将读取数据包，直接封装成一个函数readPkg(),返回message,err
@@ -23,25 +22,25 @@ func (this *Processor) process2()(err error){
 		tf := &utils.Transfer{
 			Conn: this.Conn,
 		}
-		mes,err := tf.ReadPkg()
+		mes, err := tf.ReadPkg()
 		if err != nil {
-			if err == io.EOF{
+			if err == io.EOF {
 				fmt.Println("客户端退出，服务器端也退出...")
 				return err
-			}else{
-				fmt.Println("readPkg err=",err)
+			} else {
+				fmt.Println("readPkg err=", err)
 				return err
 			}
 		}
 		err = this.serverProcessMes(&mes)
-		if err != nil{
+		if err != nil {
 			return err
 		}
 	}
 }
 
 //功能：根据客户端发送消息种类不同，决定调用哪个函数来处理
-func (this *Processor)serverProcessMes(mes *message.Message)(err error)  {
+func (this *Processor) serverProcessMes(mes *message.Message) (err error) {
 	switch mes.Type {
 	case message.LoginMesType:
 		//处理登录
