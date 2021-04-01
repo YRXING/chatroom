@@ -11,6 +11,7 @@ import (
 
 type UserProcess struct {
 	Conn net.Conn
+	UserId int
 }
 
 //编写一个函数专门处理登录请求
@@ -44,17 +45,17 @@ func (this *UserProcess) ServerProcessLogin(mes *message.Message) (err error) {
 		}
 	}else{
 		loginResMes.Code=200
+		//用户登录成功，我们就把该登录成功的人放入到userMgr中
+		//将登录成功的用户userId赋给this
+		this.UserId = loginMes.UserId
+		//将当前在线用户的id放入到loginResMes.UserId,用于客户端展示
+		userMgr.AddOnlineUser(this)
+		//遍历userMgr.onlineUsers
+		for id,_:=range userMgr.onlineUsers{
+			loginResMes.UsersId = append(loginResMes.UsersId,id)
+		}
 		fmt.Println(user,"登录成功")
 	}
-
-/*	//如果用户id=100,密码=123456，认为合法
-	if loginMes.UserId == 100 && loginMes.UserPwd == "123456" {
-		loginResMes.Code = 200
-	} else {
-		loginResMes.Code = 500
-		loginResMes.Error = "该用户不存在，请注册再使用..."
-	}*/
-
 
 
 	//4. 将loginResMes序列化
