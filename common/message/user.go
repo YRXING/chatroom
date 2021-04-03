@@ -9,4 +9,5 @@ type User struct {
 	UserPwd string `json:"userPwd"`
 	UserName string `json:"userName"`
 	UserStatus int `json:"userStatus"`
+	Sex string `json:"sex"`
 }
